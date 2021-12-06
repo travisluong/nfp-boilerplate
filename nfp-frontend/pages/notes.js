@@ -7,7 +7,7 @@ export default function Notes() {
 
   useEffect(() => {
     async function fetchNotes() {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/notes`);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/notes/`);
       const json = await res.json();
       console.log(json)
       setNotes(json);
@@ -20,7 +20,7 @@ export default function Notes() {
   }
 
   async function handleSubmit() {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/notes`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/notes/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
