@@ -1,0 +1,27 @@
+version: "3.9"
+
+services:
+  backend:
+    build: nfp-backend
+    ports:
+      - 8000:8000
+    volumes:
+      - ./nfp-backend:/usr/src/app
+  frontend:
+    build: nfp-frontend
+    ports:
+      - 3000:3000
+    volumes:
+      - ./nfp-frontend:/usr/src/app
+  db:
+    image: postgres:14
+    restart: always
+    environment:
+      POSTGRES_USER: nfp_boilerplate_user
+      POSTGRES_DB: nfp_boilerplate_dev
+      POSTGRES_PASSWORD: password
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
