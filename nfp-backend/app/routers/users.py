@@ -6,6 +6,8 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from pydantic import BaseModel
+from ..database import users, database
+
 
 # to get a string like this run:
 # openssl rand -hex 32
@@ -44,6 +46,9 @@ class User(BaseModel):
 class UserInDB(User):
     hashed_password: str
 
+class UserIn(User):
+    password: str
+
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -60,14 +65,19 @@ def get_password_hash(password):
     return pwd_context.hash(password)
 
 
-def get_user(db, username: str):
-    if username in db:
-        user_dict = db[username]
-        return UserInDB(**user_dict)
+# def get_user(db, username: str):
+#     if username in db:
+#         user_dict = db[username]
+#         return UserInDB(**user_dict)
+async def get_user(username: str):
+    query = users.select()
+    user = await database.fetch_one(query)
+    print({**user})
+    return UserInDB(username=user['username'], hashed_password=user['hashed_password'])
 
 
-def authenticate_user(fake_db, username: str, password: str):
-    user = get_user(fake_db, username)
+async def authenticate_user(username: str, password: str):
+    user = await get_user(username)
     if not user:
         return False
     if not verify_password(password, user.hashed_password):
@@ -114,7 +124,7 @@ async def get_current_active_user(current_user: User = Depends(get_current_user)
 
 @router.post("/token", response_model=Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
-    user = authenticate_user(fake_users_db, form_data.username, form_data.password)
+    user = await authenticate_user(form_data.username, form_data.password)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -136,3 +146,10 @@ async def read_users_me(current_user: User = Depends(get_current_active_user)):
 @router.get("/users/me/items/")
 async def read_own_items(current_user: User = Depends(get_current_active_user)):
     return [{"item_id": "Foo", "owner": current_user.username}]
+
+@router.post("/users/", response_model=User)
+async def sign_up(user: UserIn):
+    hashed_password = get_password_hash(user.password)
+    query = users.insert().values(username=user.username, hashed_password=hashed_password)
+    last_record_id = await database.execute(query)
+    return {"username": user.username, "id": last_record_id}
