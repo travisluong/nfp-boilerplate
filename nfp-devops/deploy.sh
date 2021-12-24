@@ -16,7 +16,7 @@ ssh $USER@$HOST "
     pip install -r requirements.txt
     alembic upgrade head
     pm2 delete nfp-backend
-    pm2 start 'gunicorn -w 4 -k uvicorn.workers.UvicornWorker main:app' --name nfp-backend
+    pm2 start 'gunicorn -w 4 -k uvicorn.workers.UvicornWorker app.main:app' --name nfp-backend
 "
 
 # nfp-frontend
