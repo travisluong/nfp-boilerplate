@@ -16,17 +16,6 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 
-fake_users_db = {
-    "johndoe": {
-        "username": "johndoe",
-        "full_name": "John Doe",
-        "email": "johndoe@example.com",
-        "hashed_password": "$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW",
-        "disabled": False,
-    }
-}
-
-
 class Token(BaseModel):
     access_token: str
     token_type: str
@@ -45,6 +34,7 @@ class User(BaseModel):
 
 class UserInDB(User):
     hashed_password: str
+
 
 class UserIn(User):
     password: str
@@ -65,15 +55,10 @@ def get_password_hash(password):
     return pwd_context.hash(password)
 
 
-# def get_user(db, username: str):
-#     if username in db:
-#         user_dict = db[username]
-#         return UserInDB(**user_dict)
 async def get_user(username: str):
-    query = users.select()
+    query = users.select().where(users.c.username == username)
     user = await database.fetch_one(query)
-    print({**user})
-    return UserInDB(username=user['username'], hashed_password=user['hashed_password'])
+    return UserInDB(username=user["username"], hashed_password=user["hashed_password"])
 
 
 async def authenticate_user(username: str, password: str):
@@ -110,7 +95,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         token_data = TokenData(username=username)
     except JWTError:
         raise credentials_exception
-    user = get_user(fake_users_db, username=token_data.username)
+    user = await get_user(username=token_data.username)
     if user is None:
         raise credentials_exception
     return user
@@ -147,9 +132,12 @@ async def read_users_me(current_user: User = Depends(get_current_active_user)):
 async def read_own_items(current_user: User = Depends(get_current_active_user)):
     return [{"item_id": "Foo", "owner": current_user.username}]
 
+
 @router.post("/users/", response_model=User)
 async def sign_up(user: UserIn):
     hashed_password = get_password_hash(user.password)
-    query = users.insert().values(username=user.username, hashed_password=hashed_password)
+    query = users.insert().values(
+        username=user.username, hashed_password=hashed_password
+    )
     last_record_id = await database.execute(query)
     return {"username": user.username, "id": last_record_id}
