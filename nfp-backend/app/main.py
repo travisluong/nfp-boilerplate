@@ -6,28 +6,8 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from dotenv import load_dotenv
 from fastapi.middleware.cors import CORSMiddleware
-
-load_dotenv()
-
-DATABASE_URL = os.getenv("DATABASE_URL")
-
-database = databases.Database(DATABASE_URL)
-
-metadata = sqlalchemy.MetaData()
-
-notes = sqlalchemy.Table(
-    "notes",
-    metadata,
-    sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True),
-    sqlalchemy.Column("text", sqlalchemy.String),
-    sqlalchemy.Column("completed", sqlalchemy.Boolean),
-)
-
-
-engine = sqlalchemy.create_engine(
-    DATABASE_URL
-)
-# metadata.create_all(engine)
+from .routers import users
+from .database import database, notes
 
 
 class NoteIn(BaseModel):
@@ -42,6 +22,8 @@ class Note(BaseModel):
 
 
 app = FastAPI()
+
+app.include_router(users.router)
 
 origins = [
     "http://localhost",
