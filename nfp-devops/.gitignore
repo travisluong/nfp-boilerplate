@@ -1,6 +1,5 @@
-.env
-.env.local
+.env.nfp-frontend
+.env.nfp-backend
 default.conf
 *.pem
 vars.sh
-alembic.ini

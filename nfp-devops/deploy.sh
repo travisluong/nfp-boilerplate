@@ -4,11 +4,9 @@ ssh-add $SSH_KEY_PATH
 
 # nfp-backend
 rsync -av ../nfp-backend $USER@$HOST: --exclude=venv
-cp ../nfp-backend/alembic.ini .
-cp ../nfp-backend/.env .
-sed -i '' "s/sqlalchemy.url =.*/sqlalchemy.url = postgresql:\/\/$DB_USER:$DB_PASSWORD@localhost\/$DB_NAME/g" alembic.ini
-sed -i '' "s/DATABASE_URL=.*/DATABASE_URL= postgresql:\/\/$DB_USER:$DB_PASSWORD@localhost\/$DB_NAME/g" .env
-scp .env alembic.ini $USER@$HOST:~/nfp-backend
+cp ../nfp-backend/.env.example .env.nfp-backend
+sed -i '' "s/DATABASE_URL=.*/DATABASE_URL=postgresql:\/\/$DB_USER:$DB_PASSWORD@localhost\/$DB_NAME/g" .env.nfp-backend
+scp .env.nfp-backend $USER@$HOST:~/nfp-backend/.env
 ssh $USER@$HOST "
     cd nfp-backend
     python3 -m venv venv
@@ -21,8 +19,9 @@ ssh $USER@$HOST "
 
 # nfp-frontend
 rsync -av ../nfp-frontend $USER@$HOST: --exclude=node_modules --exclude=.next
-sed -r "s/{HOST}/$HOST/g" .env.template > .env.local
-scp .env.local $USER@$HOST:~/nfp-frontend
+cp ../nfp-frontend/.env.development .env.nfp-frontend
+sed -i '' "s/NEXT_PUBLIC_API_URL=.*/NEXT_PUBLIC_API_URL=http:\/\/$HOST\/api/g" .env.nfp-frontend
+scp .env.nfp-frontend $USER@$HOST:~/nfp-frontend/.env.local
 ssh $USER@$HOST "
     cd nfp-frontend
     npm install
