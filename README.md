@@ -4,7 +4,7 @@
 * FastAPI
 * PostgreSQL
 
-## Frontend
+## Frontend Without Docker
 
 Install packages.
 
@@ -17,6 +17,10 @@ Run dev server.
 ## Backend With Docker
 
 Copy `.env.example` to `.env`.
+
+The `.env` should look like this:
+
+    DATABASE_URL=postgresql://nfp_boilerplate_user:password@db/nfp_boilerplate_dev
 
 Run docker compose.
 
