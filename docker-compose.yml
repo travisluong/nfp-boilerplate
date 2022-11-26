@@ -7,6 +7,8 @@ services:
       - 8000:8000
     volumes:
       - ./nfp-backend:/usr/src/app
+    depends_on:
+      - db
   frontend:
     build: nfp-frontend
     ports:
