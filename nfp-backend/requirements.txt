@@ -36,3 +36,4 @@ uvloop==0.19.0
 watchgod==0.7
 websockets==10.1
 #setuptools>=65.5.1 # not directly required, pinned by Snyk to avoid a vulnerability
+setuptools>=65.5.1 # not directly required, pinned by Snyk to avoid a vulnerability
