@@ -29,7 +29,7 @@ rsa==4.8
 six==1.16.0
 sniffio==1.2.0
 SQLAlchemy==1.4.27
-starlette==0.16.0
+starlette==0.27.0
 typing-extensions==4.0.1
 uvicorn==0.15.0
 uvloop==0.16.0
