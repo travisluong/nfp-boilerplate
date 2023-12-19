@@ -1,8 +1,14 @@
+import React from 'react';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 
+interface User {
+  username: string;
+  // Add other properties if needed
+}
+
 export default function Admin() {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
 
   useEffect(() => {
