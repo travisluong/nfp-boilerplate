@@ -8,7 +8,7 @@ click==8.0.3
 cryptography==42.0.2
 databases==0.8.0
 ecdsa==0.17.0
-fastapi==0.104.1
+fastapi==0.109.1
 greenlet==3.0.1
 gunicorn==20.1.0
 h11==0.12.0
