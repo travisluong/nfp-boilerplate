@@ -3,3 +3,4 @@
 default.conf
 *.pem
 vars.sh
+.DS_Store

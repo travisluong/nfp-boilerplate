@@ -1,3 +1,4 @@
+import React from 'react';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 
@@ -6,15 +7,15 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const router = useRouter();
 
-  function handleUsernameChange(e) {
+  function handleUsernameChange(e: { target: { value: React.SetStateAction<string>; }; }) {
     setUsername(e.target.value);
   }
 
-  function handlePasswordChange(e) {
+  function handlePasswordChange(e: { target: { value: React.SetStateAction<string>; }; }) {
     setPassword(e.target.value);
   }
 
-  async function handleSubmit(e) {
+  async function handleSubmit(e: { preventDefault: () => void; }) {
     e.preventDefault();
     const formData = new FormData();
     formData.append('username', username);

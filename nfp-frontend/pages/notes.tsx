@@ -1,9 +1,15 @@
+import React from 'react'
 import Head from 'next/head'
 import { useState, useEffect } from 'react';
 
+interface Note {
+  id: number;
+  text: string;
+}
+
 export default function Notes() {
   const [note, setNote] = useState('');
-  const [notes, setNotes] = useState([]);
+  const [notes, setNotes] = useState<Note[]>([]);
 
   useEffect(() => {
     async function fetchNotes() {
@@ -15,7 +21,7 @@ export default function Notes() {
     fetchNotes();
   }, [])
 
-  function handleChange(e) {
+  function handleChange(e: { target: { value: React.SetStateAction<string>; }; }) {
     setNote(e.target.value);
   }
 
@@ -31,10 +37,11 @@ export default function Notes() {
       })
     })
     const json = await res.json();
-    setNotes([...notes, json])
+    setNotes((prevNotes: Note[]) => [...prevNotes, json]);
   }
 
   return (
+    <>
     <div>
       <Head>
         <title>Notes</title>
@@ -56,5 +63,6 @@ export default function Notes() {
         </div>
       </div>
     </div>
+    </>
   )
 }
